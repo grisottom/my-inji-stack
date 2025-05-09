@@ -1,0 +1,250 @@
+{
+	"info": {
+		"_postman_id": "356d47f8-bb21-491c-a28b-1c1600f60597",
+		"name": "keycloak-postman",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "920668"
+	},
+	"item": [
+		{
+			"name": "01-well-known",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/idp/realms/{{realm}}/.well-known/openid-configuration",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"idp",
+						"realms",
+						"{{realm}}",
+						".well-known",
+						"openid-configuration"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "02-authorize_(for_app_only)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{server}}/idp/realms/{{realm}}/protocol/openid-connect/auth?response_type=code&client_id=pid-issuer-srv",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"idp",
+						"realms",
+						"{{realm}}",
+						"protocol",
+						"openid-connect",
+						"auth"
+					],
+					"query": [
+						{
+							"key": "response_type",
+							"value": "code"
+						},
+						{
+							"key": "client_id",
+							"value": "pid-issuer-srv"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "03-token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Store the access token in an environment variable",
+							"var responseBody = pm.response.json();",
+							"pm.environment.set(\"access_token\", responseBody.access_token);",
+							"pm.environment.set(\"refresh_token_token\", responseBody.refresh_token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "{{test_user}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{test_password}}",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{clientId}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{clientSecret}}",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{server}}/idp/realms/{{realm}}/protocol/openid-connect/token?scope=openid",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"idp",
+						"realms",
+						"{{realm}}",
+						"protocol",
+						"openid-connect",
+						"token"
+					],
+					"query": [
+						{
+							"key": "scope",
+							"value": "openid"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "04-token-instrospect",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Store the access token in an environment variable",
+							"var responseBody = pm.response.json();",
+							"pm.environment.set(\"access_token\", responseBody.access_token);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "{{test_user}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{test_password}}",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "{{clientId}}",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "{{clientSecret}}",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "token",
+							"value": "{{access_token}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{server}}/idp/realms/{{realm}}/protocol/openid-connect/token/introspect",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"idp",
+						"realms",
+						"{{realm}}",
+						"protocol",
+						"openid-connect",
+						"token",
+						"introspect"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "05-userinfo",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{server}}/idp/realms/{{realm}}/protocol/openid-connect/userinfo",
+					"host": [
+						"{{server}}"
+					],
+					"path": [
+						"idp",
+						"realms",
+						"{{realm}}",
+						"protocol",
+						"openid-connect",
+						"userinfo"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
