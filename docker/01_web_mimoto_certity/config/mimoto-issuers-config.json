@@ -16,7 +16,7 @@
           "language": "en"
         }
       ],
-      "client_id": "client-id-1",
+      "client_id": "client-id-3",
       "redirect_uri": "io.mosip.residentapp.inji://oauthredirect",
       "token_endpoint": "http://mimoto-service.localhost:8099/v1/mimoto/get-token/Farmer",
 

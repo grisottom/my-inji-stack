@@ -52,7 +52,7 @@ services:
       - network
   mimoto-service.localhost:
     container_name: 'Mimoto-Service'
-    image: mosipid/mimoto:0.15.0
+    image: mosipid/mimoto:0.15.2
     user: root
     ports:
       - '8099:8099'
@@ -87,9 +87,9 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - mimoto-service.localhost
-#    labels:
-#      - "traefik.enable=true"
-#      - "traefik.http.routers.esignet.rule=Host(`inji-web.localhost`)"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.esignet.rule=Host(`inji-web.localhost`)"
     networks:
       - network
 
