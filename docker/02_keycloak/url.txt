@@ -1,0 +1,25 @@
+console, realm master
+
+https://localhost:8443/idp/realms/pid-issuer-realm/protocol/openid-connect/auth?client_id=security-admin-console
+
+
+openid-connect, real master
+
+jwks 
+	https://localhost:8443/idp/realms/master/protocol/openid-connect/certs
+well-known
+	https://localhost:8443/idp/realms/master/.well-known/openid-configuration
+
+
+openid-connect, pid-issuer-ream
+
+jwks 
+	https://localhost:8443/idp/realms/pid-issuer-realm/protocol/openid-connect/certs
+well-known
+	https://localhost:8443/idp/realms/pid-issuer-realm/.well-known/openid-configuration
+
+
+user 
+	tneal
+pwd
+	password
