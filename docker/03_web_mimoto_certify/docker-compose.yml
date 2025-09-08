@@ -83,8 +83,11 @@ services:
       - ./config/mimoto-default.properties:/home/mosip/mimoto-default.properties
       - ./certs/oidckeystore.p12:/home/mosip/certs/oidckeystore.p12
 
-      - ./ZscalerRootCertificate-2048-SHA256.crt:/etc/ssl/certs/zscaler.crt:ro
-    entrypoint: /bin/sh -c "update-ca-certificates"      
+      # - ./ZscalerRootCertificate-2048-SHA256.crt:/etc/ssl/certs/zscaler.crt:ro
+      - ./ZscalerRootCertificate-2048-SHA256.crt:/usr/local/share/ca-certificates/ZscalerRootCertificate.crt:ro
+    command: /bin/sh -c "cd /usr/local/share/ca-certificates && ls -all  && cat ZscalerRootCertificate.crt >> /etc/ssl/certs/ca-certificates.crt"
+    entrypoint: /bin/sh -c "tail -f /dev/null"
+  
 
     depends_on:
       - datashare
@@ -123,4 +126,4 @@ volumes:
 networks:
   network:
     name: mosip_network
-    external: true  
+    # external: true  
