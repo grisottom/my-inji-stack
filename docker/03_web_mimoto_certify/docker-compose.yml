@@ -2,6 +2,45 @@ version: '3.8'
 
 services:
 
+  database.localhost:
+    image: 'postgres:latest'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./certify_init.sql:/docker-entrypoint-initdb.d/certify_init.sql
+    networks:
+      - network
+    ports:
+      - "5433:5432"
+
+  certify.localhost:
+    image: dtpinji/inji-certify:1.0
+    user: root
+    ports:
+      - 8090:8090
+    environment:
+      - container_user=mosip
+      - active_profile_env=default, csvdp-farmer
+      - SPRING_CONFIG_NAME=certify
+      - SPRING_CONFIG_LOCATION=/home/mosip/config/
+      - enable_certify_artifactory=false
+      - download_hsm_client=false
+      - mosipbox_public_url=http://certify.localhost:8090
+    volumes:
+      - ./config/certify-default.properties:/home/mosip/config/certify-default.properties
+      - ./config/certify-csvdp-farmer.properties:/home/mosip/config/certify-csvdp-farmer.properties
+      - ./config/certify-mock-mdl.properties:/home/mosip/config/certify-mock-mdl.properties
+      - ./data/CERTIFY_PKCS12:/home/mosip/CERTIFY_PKCS12
+      # This can be disabled if one uses plugins included in inji-certify-with-plugins docker image.
+      #- ./loader_path/certify/:/home/mosip/additional_jars/
+    networks:
+      - network
+    depends_on:
+      - database.localhost
+    #entrypoint: /bin/sh -c "tail -f /dev/null"      
+
+
   minio:
     container_name: 'minio-service'
     image: bitnami/minio:2022.2.7-debian-10-r0
@@ -64,7 +103,7 @@ services:
 
   mimoto-service:
     container_name: 'mimoto-service'
-    image: 'mosipid/mimoto:0.18.1'
+    image: 'dtpinji/mimoto:1.0'
     user: root
     ports:
       - '8099:8099'
@@ -99,7 +138,7 @@ services:
 
   inji-web.localhost:
     container_name: 'inji-web'
-    image: 'mosipid/inji-web:0.13.1'
+    image: 'mosipid/inji-web:0.11.1'
     ports:
       - '3004:3004'
     environment:
@@ -126,4 +165,4 @@ volumes:
 networks:
   network:
     name: mosip_network
-    # external: true  
+    external: true  
